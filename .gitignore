@@ -1,2 +1,6 @@
-/target
+/desktop/target
 /Cargo.lock
+/games
+/c8games.zip
+/wasm/pkg
+/wasm/target

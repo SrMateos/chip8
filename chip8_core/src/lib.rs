@@ -120,6 +120,20 @@ impl Emu {
         } 
     }
 
+    pub fn get_display(&self) -> &[bool] {
+        &self.screen
+    }
+
+    pub fn keypress(&mut self, idx: usize, pressed: bool) {
+        self.keys[idx] = pressed;
+    }
+
+    pub fn load(&mut self, data: &[u8]) {
+        let start = START_ADDR as usize;
+        let end = (START_ADDR as usize) + data.len();
+        self.ram[start..end].copy_from_slice(data);
+    }
+
     fn execute(&mut self, operation: u16) {
         let digit1 = (operation & 0xF000) >> 12;
         let digit2 = (operation & 0x0F00) >> 8;
@@ -352,7 +366,7 @@ impl Emu {
 
             //  FX0A - Wait for Key Pressed
             (0xF,_,0,0xA) => {
-                let pressed = false;
+                let mut pressed = false;
                 
                 for i in 0..self.keys.len() {
                     if self.keys[i] {
@@ -379,7 +393,7 @@ impl Emu {
 
             // FX1E - I += VX
             (0xF,_,1,0xE) => {
-                self.i_reg = self.i_reg.wrapping_add(self.v_reg[digit2 as usize]);
+                self.i_reg = self.i_reg.wrapping_add(self.v_reg[digit2 as usize] as u16);
             }
 
             // FX29 - Set I to Font Address
